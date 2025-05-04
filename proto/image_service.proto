@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package imageservice;
+
+service ImageService {
+  rpc ProcessImage (ImageRequest) returns (ImageResponse);
+}
+
+message ImageRequest {
+  string image_url = 1;
+  string action = 2; // e.g., "resize", "convert"
+}
+
+message ImageResponse {
+  string processed_image_url = 1;
+  string message = 2;
+}
