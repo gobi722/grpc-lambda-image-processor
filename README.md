@@ -31,3 +31,7 @@ rpc-lambda-image-processor/
 │ └── go.mod / go.sum
 ├── README.md # This README file
 
+##  License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
