@@ -1,36 +1,42 @@
 package main
 
 import (
-    "context"
-    "log"
-    "time"
+	"context"
+	"log"
+	"os"
+	"time"
 
-    pb "yourmodule/proto"
+	pb "yourmodule/proto"
 
-    "google.golang.org/grpc"
+	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
 )
 
 func main() {
-    conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
-    if err != nil {
-        log.Fatalf("Could not connect: %v", err)
-    }
-    defer conn.Close()
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Printf("Error loading .env file " + err.Error())
+	}
+	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Could not connect: %v", err)
+	}
+	defer conn.Close()
 
-    client := pb.NewImageServiceClient(conn)
+	client := pb.NewImageServiceClient(conn)
 
-    req := &pb.ImageRequest{
-        ImageUrl: "https://example.com/image.jpg",
-        Action:   "resize",
-    }
+	req := &pb.ImageRequest{
+		ImageUrl: os.Getenv("IMAGE_URL"),
+		Action:   "resize",
+	}
 
-    ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 
-    res, err := client.ProcessImage(ctx, req)
-    if err != nil {
-        log.Fatalf("Error calling ProcessImage: %v", err)
-    }
+	res, err := client.ProcessImage(ctx, req)
+	if err != nil {
+		log.Fatalf("Error calling ProcessImage: %v", err)
+	}
 
-    log.Printf("Response: %s (URL: %s)", res.Message, res.ProcessedImageUrl)
+	log.Printf("Response: %s (URL: %s)", res.Message, res.ProcessedImageUrl)
 }
